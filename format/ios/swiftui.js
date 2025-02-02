@@ -19,7 +19,7 @@ module.exports = function registerSwiftUIFormat(StyleDictionary) {
       );
 
       // Build the Colors nested struct
-      let colorsBlock = "    struct Colors {\n";
+      let colorsBlock = "\n    struct Colors {\n";
       colorTokens.forEach((token) => {
         const propertyName = token.path[1];
         if (isDynamicToken(token)) {
@@ -61,25 +61,6 @@ module.exports = function registerSwiftUIFormat(StyleDictionary) {
       let output = "import SwiftUI\n\n";
       output += `struct ${themeName} {\n`;
       output += colorsBlock + "\n" + dimensionsBlock + "\n" + fontsBlock;
-      output += "}\n\n";
-
-      // Append the private UIColor extension at the bottom
-      output += "private extension UIColor {\n";
-      output += "    convenience init(hex: String) {\n";
-      output +=
-        "        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines)\n";
-      output +=
-        '        if hexString.hasPrefix("#") { hexString.removeFirst() }\n';
-      output += "        var rgbValue: UInt64 = 0\n";
-      output += "        Scanner(string: hexString).scanHexInt64(&rgbValue)\n";
-      output +=
-        "        let red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0\n";
-      output +=
-        "        let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0\n";
-      output += "        let blue = CGFloat(rgbValue & 0x0000FF) / 255.0\n";
-      output +=
-        "        self.init(red: red, green: green, blue: blue, alpha: 1.0)\n";
-      output += "    }\n";
       output += "}\n";
 
       return output;

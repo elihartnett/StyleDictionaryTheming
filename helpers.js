@@ -63,9 +63,30 @@ async function generateUnifiedIosTheme() {
       .map((line) => "    " + line)
       .join("\n");
 
-    unifiedIosContent += indentedContent + "\n\n";
+    unifiedIosContent += indentedContent + "\n";
   });
 
+  unifiedIosContent += "}\n";
+
+  // Append the private UIColor extension at the bottom
+  unifiedIosContent += "\nprivate extension UIColor {\n";
+  unifiedIosContent += "    convenience init(hex: String) {\n";
+  unifiedIosContent +=
+    "        var hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines)\n";
+  unifiedIosContent +=
+    '        if hexString.hasPrefix("#") { hexString.removeFirst() }\n';
+  unifiedIosContent += "        var rgbValue: UInt64 = 0\n";
+  unifiedIosContent +=
+    "        Scanner(string: hexString).scanHexInt64(&rgbValue)\n";
+  unifiedIosContent +=
+    "        let red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0\n";
+  unifiedIosContent +=
+    "        let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0\n";
+  unifiedIosContent +=
+    "        let blue = CGFloat(rgbValue & 0x0000FF) / 255.0\n";
+  unifiedIosContent +=
+    "        self.init(red: red, green: green, blue: blue, alpha: 1.0)\n";
+  unifiedIosContent += "    }\n";
   unifiedIosContent += "}\n";
 
   const unifiedIosPath = path.join(iosBuildDir, "Theme.swift");
@@ -83,7 +104,7 @@ async function generateUnifiedAndroidTheme() {
     .readdirSync(androidBuildDir)
     .filter((file) => file.endsWith("Theme.kt") && file !== "Theme.kt");
 
-  let unifiedAndroidContent = `package com.example.myapp.theme\n\nobject Theme {\n\n`;
+  let unifiedAndroidContent = `package com.example.myapp.theme\n\nobject Theme {\n`;
 
   generatedAndroidThemeFiles.forEach((file) => {
     let content = fs.readFileSync(path.join(androidBuildDir, file), "utf8");
@@ -107,7 +128,7 @@ async function generateUnifiedAndroidTheme() {
       .map((line) => "    " + line)
       .join("\n");
 
-    unifiedAndroidContent += indentedContent + "\n\n";
+    unifiedAndroidContent += indentedContent + "\n";
   });
 
   unifiedAndroidContent += "}\n";
