@@ -1,6 +1,6 @@
 const { isDynamicToken } = require("../helpers");
 
-module.exports = function registerAndroidJetpackThemeFormat(StyleDictionary) {
+module.exports = function registerJetpackFormat(StyleDictionary) {
   StyleDictionary.registerFormat({
     name: "android/jetpack",
     format: function ({ dictionary, options }) {

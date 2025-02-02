@@ -1,6 +1,6 @@
 const { isDynamicToken } = require("../helpers");
 
-module.exports = function registerIosSwiftThemeFormat(StyleDictionary) {
+module.exports = function registerSwiftUIFormat(StyleDictionary) {
   StyleDictionary.registerFormat({
     name: "ios/swiftui",
     format: function ({ dictionary, options }) {
