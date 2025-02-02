@@ -42,55 +42,51 @@ themeFiles.forEach((file) => {
   fs.writeFileSync(mergedPath, JSON.stringify(mergedTheme, null, 2));
 });
 
-// 5. Dynamically generate file entries for iOS and Android from the merged themes
-
-// Read merged theme files
-const mergedThemeFiles = fs
-  .readdirSync(mergedDir)
-  .filter((file) => file.endsWith(".json"));
-
-const iosFiles = mergedThemeFiles.map((file) => {
-  const capitalizedThemeName = getCapitalizedThemeName(file);
-  return {
-    destination: `${capitalizedThemeName}Theme.swift`,
-    format: "ios/swiftui",
-    options: { themeName: `${capitalizedThemeName}Theme` },
-  };
-});
-
-const androidFiles = mergedThemeFiles.map((file) => {
-  const capitalizedThemeName = getCapitalizedThemeName(file);
-  return {
-    destination: `${capitalizedThemeName}Theme.kt`,
-    format: "android/jetpack",
-    options: { themeName: `${capitalizedThemeName}Theme` },
-  };
-});
-
-// 6. Register your custom formats for both platforms
+// 5. Register your custom formats for both platforms
 const registerSwiftUIFormat = require("./format/ios/swiftui");
 registerSwiftUIFormat(StyleDictionary);
 
 const registerJetpackThemeFormat = require("./format/android/jetpack");
 registerJetpackThemeFormat(StyleDictionary);
 
-// 7. Create your Style Dictionary configuration using the merged theme files as the source
-const config = {
-  source: [`${mergedDir}/**/*.json`],
-  platforms: {
-    ios: {
-      buildPath: "build/ios/",
-      files: iosFiles,
-    },
-    android: {
-      buildPath: "build/android/",
-      files: androidFiles,
-    },
-  },
-};
+// 6. For each merged theme file, create a separate Style Dictionary configuration
+const mergedThemeFiles = fs
+  .readdirSync(mergedDir)
+  .filter((file) => file.endsWith(".json"));
 
-const sd = new StyleDictionary(config);
-sd.buildAllPlatforms();
+mergedThemeFiles.forEach((file) => {
+  const capitalizedThemeName = getCapitalizedThemeName(file);
 
+  const config = {
+    source: [path.join(mergedDir, file)], // Only this theme's tokens are loaded.
+    platforms: {
+      ios: {
+        buildPath: "build/ios/",
+        files: [
+          {
+            destination: `${capitalizedThemeName}Theme.swift`,
+            format: "ios/swiftui",
+            options: { themeName: `${capitalizedThemeName}Theme` },
+          },
+        ],
+      },
+      android: {
+        buildPath: "build/android/",
+        files: [
+          {
+            destination: `${capitalizedThemeName}Theme.kt`,
+            format: "android/jetpack",
+            options: { themeName: `${capitalizedThemeName}Theme` },
+          },
+        ],
+      },
+    },
+  };
+
+  const sd = new StyleDictionary(config);
+  sd.buildAllPlatforms();
+});
+
+// Generate unified theme file for both platforms
 generateUnifiedIosTheme();
 generateUnifiedAndroidTheme();
