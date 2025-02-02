@@ -42,7 +42,7 @@ module.exports = function registerJetpackFormat(StyleDictionary) {
       output += "import androidx.compose.ui.text.font.FontFamily\n\n";
 
       // Start main theme object
-      output += `object ${themeName} {\n\n`;
+      output += `object ${themeName} {\n`;
 
       // Colors nested object
       output += "    object Colors {\n";
@@ -60,7 +60,7 @@ module.exports = function registerJetpackFormat(StyleDictionary) {
           output += `        val ${propertyName}: Color = Color(${toKotlinColorLiteral(token.value)})\n`;
         }
       });
-      output += "    }\n\n";
+      output += "    }\n";
 
       // Dimensions nested object
       output += "    object Dimensions {\n";
@@ -69,7 +69,7 @@ module.exports = function registerJetpackFormat(StyleDictionary) {
         // Append an "f" suffix to denote a Float literal in Kotlin.
         output += `        const val ${propertyName}: Float = ${token.value}f\n`;
       });
-      output += "    }\n\n";
+      output += "    }\n";
 
       // Fonts nested object
       output += "    object Fonts {\n";
